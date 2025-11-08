@@ -5,7 +5,6 @@ import { useEdit } from '../../contexts/EditContext';
 import { useOrders } from '../../hooks/useOrders';
 import type { OrderWithItems } from '../../types/database.types';
 import LoadingSpinner from '../common/LoadingSpinner';
-import { getDateBasedColor, getStatusColor } from '../../utils/dateColors';
 import { format } from 'date-fns';
 
 const getPreparationStatusColor = (status: string) => {

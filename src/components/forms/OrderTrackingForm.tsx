@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
 import { useOrders } from '../../hooks/useOrders';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const OrderTrackingForm: React.FC = () => {
-  const { user } = useAuth();
   const { orders, loading: ordersLoading } = useOrders();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
