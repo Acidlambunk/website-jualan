@@ -193,7 +193,7 @@ const OrderTrackingForm: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Package Received Date
+                    Package Arrival Date
                   </label>
                   <input
                     type="date"

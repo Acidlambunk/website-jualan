@@ -94,7 +94,7 @@ const OrderTrackingSpreadsheet: React.FC = () => {
             <div className="excel-header-cell w-32">Phone</div>
             <div className="excel-header-cell w-32">Package Number</div>
             <div className="excel-header-cell w-32">Sent Date</div>
-            <div className="excel-header-cell w-32">Received Date</div>
+            <div className="excel-header-cell w-32">Arrival Date</div>
             <div className="excel-header-cell w-32">Last Pickup</div>
             <div className="excel-header-cell w-24 text-center">Confirmed</div>
             <div className="excel-header-cell w-24 text-center">Accepted</div>
