@@ -371,12 +371,13 @@ const ProductInputForm: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Base Price (TWD)
+                  Selling Price (TWD)
                 </label>
                 <input
                   type="number"
                   value={basePrice}
                   onChange={(e) => setBasePrice(e.target.value)}
+                  placeholder="Price customer pays"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min="0"
                   step="10"
@@ -544,7 +545,7 @@ const ProductInputForm: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Price Override
+                    Capital Price
                   </label>
                   <input
                     type="number"
@@ -555,10 +556,10 @@ const ProductInputForm: React.FC = () => {
                         unit_price: parseFloat(e.target.value) || 0,
                       })
                     }
+                    placeholder="Cost price (leave 0 for base price)"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min="0"
                     step="1000"
-                    placeholder="Leave 0 for base price"
                   />
                 </div>
                 <div>

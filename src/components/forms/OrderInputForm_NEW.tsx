@@ -55,7 +55,7 @@ const OrderInputForm: React.FC = () => {
       return;
     }
 
-    const price = selectedColor.unit_price || selectedProduct.base_price || 0;
+    const price = selectedProduct.base_price || 0;
 
     const newItem: OrderItem = {
       product_color_id: selectedColor.id,
@@ -417,7 +417,7 @@ const OrderInputForm: React.FC = () => {
                   {new Intl.NumberFormat('zh-TW', {
                     style: 'currency',
                     currency: 'TWD',
-                  }).format(selectedColor.unit_price || selectedProduct?.base_price || 0)}
+                  }).format(selectedProduct?.base_price || 0)}
                 </div>
               )}
               <button

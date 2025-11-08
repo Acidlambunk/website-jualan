@@ -54,9 +54,12 @@ const OrdersSpreadsheet: React.FC = () => {
               .from('product_colors')
               .select('stock_quantity, reserved_quantity')
               .eq('id', item.product_color_id)
-              .single();
+              .maybeSingle();
 
-            if (colorError) throw colorError;
+            if (colorError) {
+              console.error('Error fetching product color:', colorError);
+              continue;
+            }
 
             if (colorData) {
               // Decrease stock_quantity and reserved_quantity
@@ -110,11 +113,16 @@ const OrdersSpreadsheet: React.FC = () => {
         const quantity = item.quantity;
 
         // Get current reserved quantity
-        const { data: colorData } = await supabase
+        const { data: colorData, error: colorError } = await supabase
           .from('product_colors')
           .select('reserved_quantity')
           .eq('id', productColorId)
-          .single();
+          .maybeSingle();
+
+        if (colorError) {
+          console.error('Error fetching product color:', colorError);
+          continue;
+        }
 
         if (colorData) {
           // Decrease reserved quantity

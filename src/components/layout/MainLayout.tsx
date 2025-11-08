@@ -8,10 +8,11 @@ import OrderTrackingSpreadsheet from '../spreadsheet/OrderTrackingSpreadsheet';
 import ProductInputForm from '../forms/ProductInputForm';
 import OrderInputForm from '../forms/OrderInputForm';
 import OrderTrackingForm from '../forms/OrderTrackingForm';
+import StatisticsView from '../statistics/StatisticsView';
 
 const MainLayout: React.FC = () => {
   const { editingProduct, editingOrder } = useEdit();
-  const [activeView, setActiveView] = useState<'products' | 'orders' | 'tracking'>('products');
+  const [activeView, setActiveView] = useState<'products' | 'orders' | 'tracking' | 'statistics'>('products');
   const [activeMode, setActiveMode] = useState<'spreadsheet' | 'input'>('spreadsheet');
 
   // Automatically switch to input mode when editing
@@ -24,6 +25,11 @@ const MainLayout: React.FC = () => {
   }, [editingProduct, editingOrder]);
 
   const renderContent = () => {
+    // Statistics view doesn't have spreadsheet/input modes
+    if (activeView === 'statistics') {
+      return <StatisticsView />;
+    }
+
     if (activeMode === 'spreadsheet') {
       switch (activeView) {
         case 'products':

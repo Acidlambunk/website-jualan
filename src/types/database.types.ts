@@ -52,6 +52,7 @@ export interface CustomerOrder {
   total_amount: number | null;
   discount_amount: number | null;
   final_amount: number | null;
+  shipping_cost: number | null;
   payment_status: string;
   notes: string | null;
   created_at: string;

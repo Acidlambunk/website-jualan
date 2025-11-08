@@ -202,7 +202,7 @@ const ProductsSpreadsheet: React.FC = () => {
             <div className="excel-header-cell w-32">Category</div>
             <div className="excel-header-cell w-48">Colors Available</div>
             <div className="excel-header-cell w-24 text-right">Total Stock</div>
-            <div className="excel-header-cell w-24 text-right">Base Price</div>
+            <div className="excel-header-cell w-24 text-right">Selling Price</div>
             <div className="excel-header-cell w-32">Status</div>
             <div className="excel-header-cell w-32 text-center">Actions</div>
           </div>

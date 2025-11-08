@@ -15,6 +15,7 @@ const OrderTrackingForm: React.FC = () => {
   const [packageSentDate, setPackageSentDate] = useState('');
   const [packageReceivedDate, setPackageReceivedDate] = useState('');
   const [lastPickupDate, setLastPickupDate] = useState('');
+  const [shippingCost, setShippingCost] = useState(0);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
 
@@ -27,6 +28,7 @@ const OrderTrackingForm: React.FC = () => {
       setPackageSentDate(order.package_sent_date ? order.package_sent_date.split('T')[0] : '');
       setPackageReceivedDate(order.package_received_date ? order.package_received_date.split('T')[0] : '');
       setLastPickupDate(order.last_pickup_date || '');
+      setShippingCost(order.shipping_cost || 0);
       setIsConfirmed(order.is_confirmed);
       setIsAccepted(order.is_accepted);
     }
@@ -51,6 +53,7 @@ const OrderTrackingForm: React.FC = () => {
           package_sent_date: packageSentDate || null,
           package_received_date: packageReceivedDate || null,
           last_pickup_date: lastPickupDate || null,
+          shipping_cost: shippingCost,
           is_confirmed: isConfirmed,
           is_accepted: isAccepted,
         })
@@ -216,6 +219,25 @@ const OrderTrackingForm: React.FC = () => {
                     disabled={!selectedOrderId}
                   />
                 </div>
+              </div>
+
+              <div className="max-w-xs">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Shipping Cost (TWD)
+                </label>
+                <input
+                  type="number"
+                  value={shippingCost}
+                  onChange={(e) => setShippingCost(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="0"
+                  step="1"
+                  placeholder="0"
+                  disabled={!selectedOrderId}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Actual shipping cost paid
+                </p>
               </div>
             </div>
           </section>

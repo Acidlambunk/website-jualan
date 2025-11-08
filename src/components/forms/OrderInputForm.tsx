@@ -59,7 +59,7 @@ const OrderInputForm: React.FC = () => {
       return;
     }
 
-    const price = selectedColor.unit_price || selectedProduct.base_price || 0;
+    const price = selectedProduct.base_price || 0;
 
     const newItem: OrderItem = {
       product_color_id: selectedColor.id,
@@ -208,11 +208,16 @@ const OrderInputForm: React.FC = () => {
         // Reserve stock and log movements (only for new orders)
         if (!orderId) {
           for (const item of orderItems) {
-            const { data: colorData } = await supabase
+            const { data: colorData, error: colorError } = await supabase
               .from('product_colors')
               .select('reserved_quantity')
               .eq('id', item.product_color_id)
-              .single();
+              .maybeSingle();
+
+            if (colorError) {
+              console.error('Error fetching product color:', colorError);
+              continue;
+            }
 
             if (colorData) {
               await supabase
@@ -515,7 +520,7 @@ const OrderInputForm: React.FC = () => {
                   {new Intl.NumberFormat('zh-TW', {
                     style: 'currency',
                     currency: 'TWD',
-                  }).format(selectedColor.unit_price || selectedProduct?.base_price || 0)}
+                  }).format(selectedProduct?.base_price || 0)}
                 </div>
               )}
               <button

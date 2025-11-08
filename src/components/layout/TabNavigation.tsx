@@ -1,9 +1,9 @@
 import React from 'react';
 
 interface TabNavigationProps {
-  activeView: 'products' | 'orders' | 'tracking';
+  activeView: 'products' | 'orders' | 'tracking' | 'statistics';
   activeMode: 'spreadsheet' | 'input';
-  onViewChange: (view: 'products' | 'orders' | 'tracking') => void;
+  onViewChange: (view: 'products' | 'orders' | 'tracking' | 'statistics') => void;
   onModeChange: (mode: 'spreadsheet' | 'input') => void;
 }
 
@@ -17,6 +17,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
     { id: 'products' as const, label: 'Products' },
     { id: 'orders' as const, label: 'Customer Orders' },
     { id: 'tracking' as const, label: 'Order Tracking' },
+    { id: 'statistics' as const, label: 'Statistics & Sales' },
   ];
 
   const modes = [
@@ -46,24 +47,26 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
       </div>
 
       {/* Mode toggle */}
-      <div className="px-4 py-2 bg-gray-50 flex items-center space-x-4">
-        <span className="text-sm text-gray-600 font-medium">View Mode:</span>
-        <div className="flex bg-white rounded-md shadow-sm">
-          {modes.map((mode) => (
-            <button
-              key={mode.id}
-              onClick={() => onModeChange(mode.id)}
-              className={`${
-                activeMode === mode.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
-              } px-4 py-2 text-sm font-medium first:rounded-l-md last:rounded-r-md transition-colors`}
-            >
-              {mode.label}
-            </button>
-          ))}
+      {activeView !== 'statistics' && (
+        <div className="px-4 py-2 bg-gray-50 flex items-center space-x-4">
+          <span className="text-sm text-gray-600 font-medium">View Mode:</span>
+          <div className="flex bg-white rounded-md shadow-sm">
+            {modes.map((mode) => (
+              <button
+                key={mode.id}
+                onClick={() => onModeChange(mode.id)}
+                className={`${
+                  activeMode === mode.id
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                } px-4 py-2 text-sm font-medium first:rounded-l-md last:rounded-r-md transition-colors`}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
