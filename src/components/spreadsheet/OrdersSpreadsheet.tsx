@@ -225,6 +225,7 @@ const OrdersSpreadsheet: React.FC = () => {
             <div className="excel-header-cell w-12 text-center">#</div>
             <div className="excel-header-cell w-40">Customer Name</div>
             <div className="excel-header-cell w-32">Phone</div>
+            <div className="excel-header-cell w-64">Products Ordered</div>
             <div className="excel-header-cell w-32">Shipping Method</div>
             <div className="excel-header-cell w-48">Shipping Address</div>
             <div className="excel-header-cell w-48">Delivery Notes</div>
@@ -299,6 +300,23 @@ const OrderRow: React.FC<OrderRowProps> = ({
       <div className="excel-cell w-12 text-center text-gray-500">{index}</div>
       <div className="excel-cell w-40 font-medium">{order.customer_name}</div>
       <div className="excel-cell w-32">{order.phone_number}</div>
+      <div className="excel-cell w-64 text-sm">
+        {order.order_items.length > 0 ? (
+          <div className="space-y-0.5">
+            {order.order_items.map((item, idx) => (
+              <div key={idx} className="text-gray-700">
+                <span className="font-medium">{item.product_color.product.product_name}</span>
+                {' '}
+                <span className="text-gray-500">({item.product_color.color_name})</span>
+                {' '}
+                <span className="text-blue-600 font-medium">x{item.quantity}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <span className="text-gray-400">No items</span>
+        )}
+      </div>
       <div className="excel-cell w-32">{order.shipping_method || '-'}</div>
       <div className="excel-cell w-48 text-sm">{order.shipping_address || '-'}</div>
       <div className="excel-cell w-48 text-sm text-gray-600">{order.delivery_notes || '-'}</div>

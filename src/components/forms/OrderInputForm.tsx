@@ -562,7 +562,7 @@ const OrderInputForm: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min="0"
                     max={calculateTotal()}
-                    step="10"
+                    step="1"
                     placeholder="0"
                   />
                   <p className="text-xs text-gray-500 mt-1">
