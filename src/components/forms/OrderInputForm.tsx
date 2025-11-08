@@ -32,6 +32,7 @@ const OrderInputForm: React.FC = () => {
   const [shippingAddress, setShippingAddress] = useState('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [additionalFee, setAdditionalFee] = useState(0);
 
   // Order items
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
@@ -89,7 +90,7 @@ const OrderInputForm: React.FC = () => {
 
   const calculateFinalAmount = () => {
     const total = calculateTotal();
-    return Math.max(0, total - discountAmount);
+    return Math.max(0, total - discountAmount + additionalFee);
   };
 
   // Load editing order data
@@ -102,6 +103,7 @@ const OrderInputForm: React.FC = () => {
       setShippingAddress(editingOrder.shipping_address || '');
       setDeliveryNotes(editingOrder.delivery_notes || '');
       setDiscountAmount(editingOrder.discount_amount || 0);
+      setAdditionalFee(editingOrder.additional_fee || 0);
 
       // Load order items
       const loadedItems: OrderItem[] = editingOrder.order_items.map((item) => ({
@@ -125,6 +127,7 @@ const OrderInputForm: React.FC = () => {
     setShippingAddress('');
     setDeliveryNotes('');
     setDiscountAmount(0);
+    setAdditionalFee(0);
     setOrderItems([]);
     clearEditing();
   };
@@ -153,6 +156,7 @@ const OrderInputForm: React.FC = () => {
             delivery_notes: deliveryNotes || null,
             total_amount: totalAmount,
             discount_amount: discountAmount,
+            additional_fee: additionalFee,
           })
           .eq('id', orderId)
           .select()
@@ -181,6 +185,7 @@ const OrderInputForm: React.FC = () => {
             preparation_status: prepStatus,
             total_amount: totalAmount,
             discount_amount: discountAmount,
+            additional_fee: additionalFee,
             created_by: user?.id,
           })
           .select()
@@ -439,6 +444,14 @@ const OrderInputForm: React.FC = () => {
                       }).format(discountAmount)}
                     </div>
                   )}
+                  {additionalFee > 0 && (
+                    <div className="text-blue-600">
+                      Additional Fee: +{new Intl.NumberFormat('zh-TW', {
+                        style: 'currency',
+                        currency: 'TWD',
+                      }).format(additionalFee)}
+                    </div>
+                  )}
                   <div className="text-lg font-bold border-t pt-2">
                     Total: {new Intl.NumberFormat('zh-TW', {
                       style: 'currency',
@@ -533,30 +546,49 @@ const OrderInputForm: React.FC = () => {
             </div>
           </section>
 
-          {/* Discount */}
+          {/* Discount & Additional Fee */}
           {orderItems.length > 0 && (
             <section className="border-b pb-6">
-              <h3 className="text-lg font-semibold mb-4">Discount</h3>
-              <div className="max-w-xs">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Discount Amount (TWD)
-                </label>
-                <input
-                  type="number"
-                  value={discountAmount}
-                  onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min="0"
-                  max={calculateTotal()}
-                  step="10"
-                  placeholder="0"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Maximum discount: {new Intl.NumberFormat('zh-TW', {
-                    style: 'currency',
-                    currency: 'TWD',
-                  }).format(calculateTotal())}
-                </p>
+              <h3 className="text-lg font-semibold mb-4">Discount & Additional Fee</h3>
+              <div className="grid grid-cols-2 gap-4 max-w-2xl">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Discount Amount (TWD)
+                  </label>
+                  <input
+                    type="number"
+                    value={discountAmount}
+                    onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    min="0"
+                    max={calculateTotal()}
+                    step="10"
+                    placeholder="0"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Maximum discount: {new Intl.NumberFormat('zh-TW', {
+                      style: 'currency',
+                      currency: 'TWD',
+                    }).format(calculateTotal())}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Additional Fee (TWD)
+                  </label>
+                  <input
+                    type="number"
+                    value={additionalFee}
+                    onChange={(e) => setAdditionalFee(parseFloat(e.target.value) || 0)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Extra charges (e.g., packaging, handling)
+                  </p>
+                </div>
               </div>
             </section>
           )}
