@@ -29,10 +29,19 @@ const OrdersSpreadsheet: React.FC = () => {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const filteredOrders = orders.filter(
-    (order) =>
-      order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.phone_number.includes(searchTerm) ||
-      (order.shipping_method?.toLowerCase().includes(searchTerm.toLowerCase()))
+    (order) => {
+      // Hide orders where both confirmed and accepted are ticked
+      if (order.is_confirmed && order.is_accepted) {
+        return false;
+      }
+
+      // Apply search filter
+      return (
+        order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.phone_number.includes(searchTerm) ||
+        (order.shipping_method?.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
   );
 
   const handleUpdatePrepStatus = async (orderId: string, newStatus: string, oldStatus: string) => {

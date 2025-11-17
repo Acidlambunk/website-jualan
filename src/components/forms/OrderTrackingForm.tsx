@@ -28,7 +28,15 @@ const OrderTrackingForm: React.FC = () => {
       setPackageSentDate(order.package_sent_date ? order.package_sent_date.split('T')[0] : '');
       setPackageReceivedDate(order.package_received_date ? order.package_received_date.split('T')[0] : '');
       setLastPickupDate(order.last_pickup_date || '');
-      setShippingCost(order.shipping_cost || 0);
+
+      // Auto-set shipping cost to 38 for sevel/fami, manual for post
+      const shippingMethod = order.shipping_method?.toLowerCase();
+      if (shippingMethod === 'sevel' || shippingMethod === 'fami') {
+        setShippingCost(38);
+      } else {
+        setShippingCost(order.shipping_cost || 0);
+      }
+
       setIsConfirmed(order.is_confirmed);
       setIsAccepted(order.is_accepted);
     }
@@ -229,14 +237,21 @@ const OrderTrackingForm: React.FC = () => {
                   type="number"
                   value={shippingCost}
                   onChange={(e) => setShippingCost(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   min="0"
                   step="1"
                   placeholder="0"
-                  disabled={!selectedOrderId}
+                  disabled={
+                    !selectedOrderId ||
+                    selectedOrder?.shipping_method?.toLowerCase() === 'sevel' ||
+                    selectedOrder?.shipping_method?.toLowerCase() === 'fami'
+                  }
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Actual shipping cost paid
+                  {selectedOrder?.shipping_method?.toLowerCase() === 'sevel' ||
+                  selectedOrder?.shipping_method?.toLowerCase() === 'fami'
+                    ? 'Auto-set to 38 for Sevel/Fami shipping'
+                    : 'Actual shipping cost paid'}
                 </p>
               </div>
             </div>
