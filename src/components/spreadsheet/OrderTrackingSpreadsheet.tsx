@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useEdit } from '../../contexts/EditContext';
 import { useOrders } from '../../hooks/useOrders';
 import type { OrderWithItems } from '../../types/database.types';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { format } from 'date-fns';
 
 const OrderTrackingSpreadsheet: React.FC = () => {
+  const { setEditingTrackingOrder } = useEdit();
   const { orders, loading, error, refetch } = useOrders();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -100,6 +102,7 @@ const OrderTrackingSpreadsheet: React.FC = () => {
             <div className="excel-header-cell w-24 text-center">Accepted</div>
             <div className="excel-header-cell w-32">Shipping Method</div>
             <div className="excel-header-cell w-48">Address</div>
+            <div className="excel-header-cell w-24 text-center">Actions</div>
           </div>
 
           {/* Data Rows */}
@@ -115,6 +118,7 @@ const OrderTrackingSpreadsheet: React.FC = () => {
                 index={index + 1}
                 onToggleConfirmed={handleToggleConfirmed}
                 onToggleAccepted={handleToggleAccepted}
+                onEdit={setEditingTrackingOrder}
               />
             ))
           )}
@@ -129,13 +133,15 @@ interface TrackingRowProps {
   index: number;
   onToggleConfirmed: (orderId: string, currentValue: boolean) => void;
   onToggleAccepted: (orderId: string, currentValue: boolean) => void;
+  onEdit: (order: OrderWithItems) => void;
 }
 
 const TrackingRow: React.FC<TrackingRowProps> = ({
   order,
   index,
   onToggleConfirmed,
-  onToggleAccepted
+  onToggleAccepted,
+  onEdit
 }) => {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
@@ -177,6 +183,14 @@ const TrackingRow: React.FC<TrackingRowProps> = ({
       </div>
       <div className="excel-cell w-32">{order.shipping_method || '-'}</div>
       <div className="excel-cell w-48 text-sm">{order.shipping_address || '-'}</div>
+      <div className="excel-cell w-24 text-center">
+        <button
+          onClick={() => onEdit(order)}
+          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+        >
+          Edit
+        </button>
+      </div>
     </div>
   );
 };

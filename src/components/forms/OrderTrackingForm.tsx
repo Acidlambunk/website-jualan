@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useOrders } from '../../hooks/useOrders';
+import { useEdit } from '../../contexts/EditContext';
 import LoadingSpinner from '../common/LoadingSpinner';
 
 const OrderTrackingForm: React.FC = () => {
   const { orders, loading: ordersLoading } = useOrders();
+  const { editingTrackingOrder, setEditingTrackingOrder } = useEdit();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -18,6 +20,13 @@ const OrderTrackingForm: React.FC = () => {
   const [shippingCost, setShippingCost] = useState(0);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
+
+  // Load editing order when set from spreadsheet
+  useEffect(() => {
+    if (editingTrackingOrder) {
+      handleOrderSelect(editingTrackingOrder.id);
+    }
+  }, [editingTrackingOrder]);
 
   // Load selected order data
   const handleOrderSelect = (orderId: string) => {
@@ -70,6 +79,7 @@ const OrderTrackingForm: React.FC = () => {
       if (updateError) throw updateError;
 
       setSuccess(true);
+      setEditingTrackingOrder(null); // Clear editing state
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
       setError(err.message);
@@ -87,6 +97,7 @@ const OrderTrackingForm: React.FC = () => {
     setLastPickupDate('');
     setIsConfirmed(false);
     setIsAccepted(false);
+    setEditingTrackingOrder(null); // Clear editing state
   };
 
   if (ordersLoading) {

@@ -4,8 +4,10 @@ import type { ProductWithColors, OrderWithItems } from '../types/database.types'
 interface EditContextType {
   editingProduct: ProductWithColors | null;
   editingOrder: OrderWithItems | null;
+  editingTrackingOrder: OrderWithItems | null;
   setEditingProduct: (product: ProductWithColors | null) => void;
   setEditingOrder: (order: OrderWithItems | null) => void;
+  setEditingTrackingOrder: (order: OrderWithItems | null) => void;
   clearEditing: () => void;
 }
 
@@ -16,10 +18,12 @@ export const EditProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [editingProduct, setEditingProduct] = useState<ProductWithColors | null>(null);
   const [editingOrder, setEditingOrder] = useState<OrderWithItems | null>(null);
+  const [editingTrackingOrder, setEditingTrackingOrder] = useState<OrderWithItems | null>(null);
 
   const clearEditing = () => {
     setEditingProduct(null);
     setEditingOrder(null);
+    setEditingTrackingOrder(null);
   };
 
   return (
@@ -27,8 +31,10 @@ export const EditProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         editingProduct,
         editingOrder,
+        editingTrackingOrder,
         setEditingProduct,
         setEditingOrder,
+        setEditingTrackingOrder,
         clearEditing,
       }}
     >

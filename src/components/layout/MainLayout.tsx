@@ -11,18 +11,19 @@ import OrderTrackingForm from '../forms/OrderTrackingForm';
 import StatisticsView from '../statistics/StatisticsView';
 
 const MainLayout: React.FC = () => {
-  const { editingProduct, editingOrder } = useEdit();
+  const { editingProduct, editingOrder, editingTrackingOrder } = useEdit();
   const [activeView, setActiveView] = useState<'products' | 'orders' | 'tracking' | 'statistics'>('products');
   const [activeMode, setActiveMode] = useState<'spreadsheet' | 'input'>('spreadsheet');
 
   // Automatically switch to input mode when editing
   useEffect(() => {
-    if (editingProduct || editingOrder) {
+    if (editingProduct || editingOrder || editingTrackingOrder) {
       setActiveMode('input');
       if (editingProduct) setActiveView('products');
       if (editingOrder) setActiveView('orders');
+      if (editingTrackingOrder) setActiveView('tracking');
     }
-  }, [editingProduct, editingOrder]);
+  }, [editingProduct, editingOrder, editingTrackingOrder]);
 
   const renderContent = () => {
     // Statistics view doesn't have spreadsheet/input modes
