@@ -28,6 +28,7 @@ const OrdersSpreadsheet: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
   const [sortByDeliveryDate, setSortByDeliveryDate] = useState(false);
+  const [prioritizePending, setPrioritizePending] = useState(false);
 
   const filteredOrders = orders.filter(
     (order) => {
@@ -45,18 +46,30 @@ const OrdersSpreadsheet: React.FC = () => {
     }
   );
 
-  // Sort orders by delivery date if enabled
-  const sortedOrders = sortByDeliveryDate
-    ? [...filteredOrders].sort((a, b) => {
-        // Orders with no delivery date (ASAP) come first
-        if (!a.delivery_date && !b.delivery_date) return 0;
-        if (!a.delivery_date) return -1;
-        if (!b.delivery_date) return 1;
+  // Sort orders by delivery date and/or preparation status
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    // First, prioritize by preparation status if enabled
+    if (prioritizePending) {
+      const aIsPending = a.preparation_status === 'Pending' || a.preparation_status === 'Pending-Date';
+      const bIsPending = b.preparation_status === 'Pending' || b.preparation_status === 'Pending-Date';
 
-        // Sort by delivery date ascending (earliest first)
-        return new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime();
-      })
-    : filteredOrders;
+      if (aIsPending && !bIsPending) return -1;
+      if (!aIsPending && bIsPending) return 1;
+    }
+
+    // Then sort by delivery date if enabled
+    if (sortByDeliveryDate) {
+      // Orders with no delivery date (ASAP) come first
+      if (!a.delivery_date && !b.delivery_date) return 0;
+      if (!a.delivery_date) return -1;
+      if (!b.delivery_date) return 1;
+
+      // Sort by delivery date ascending (earliest first)
+      return new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime();
+    }
+
+    return 0;
+  });
 
   const handleUpdatePrepStatus = async (orderId: string, newStatus: string, oldStatus: string) => {
     try {
@@ -234,6 +247,15 @@ const OrdersSpreadsheet: React.FC = () => {
               className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
             />
             <span className="text-sm text-gray-700">Sort by Delivery Date</span>
+          </label>
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={prioritizePending}
+              onChange={(e) => setPrioritizePending(e.target.checked)}
+              className="w-4 h-4 text-orange-600 rounded focus:ring-2 focus:ring-orange-500"
+            />
+            <span className="text-sm text-gray-700">Pending First</span>
           </label>
           <div className="text-sm text-gray-600">
             {sortedOrders.length} order(s)
