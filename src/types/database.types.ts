@@ -39,6 +39,7 @@ export interface CustomerOrder {
   shipping_method: string | null;
   shipping_address: string | null;
   delivery_notes: string | null;
+  delivery_date: string | null;
   preparation_status: string;
   sample_delivery_date: string | null;
   package_pickup_date: string | null;

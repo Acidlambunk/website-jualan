@@ -31,6 +31,7 @@ const OrderInputForm: React.FC = () => {
   const [customShipping, setCustomShipping] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
+  const [deliveryDate, setDeliveryDate] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [additionalFee, setAdditionalFee] = useState(0);
 
@@ -102,6 +103,7 @@ const OrderInputForm: React.FC = () => {
       setShippingMethod(editingOrder.shipping_method || '');
       setShippingAddress(editingOrder.shipping_address || '');
       setDeliveryNotes(editingOrder.delivery_notes || '');
+      setDeliveryDate(editingOrder.delivery_date || '');
       setDiscountAmount(editingOrder.discount_amount || 0);
       setAdditionalFee(editingOrder.additional_fee || 0);
 
@@ -126,6 +128,7 @@ const OrderInputForm: React.FC = () => {
     setCustomShipping('');
     setShippingAddress('');
     setDeliveryNotes('');
+    setDeliveryDate('');
     setDiscountAmount(0);
     setAdditionalFee(0);
     setOrderItems([]);
@@ -154,6 +157,7 @@ const OrderInputForm: React.FC = () => {
             shipping_method: finalShippingMethod,
             shipping_address: shippingAddress || null,
             delivery_notes: deliveryNotes || null,
+            delivery_date: deliveryDate || null,
             total_amount: totalAmount,
             discount_amount: discountAmount,
             additional_fee: additionalFee,
@@ -182,6 +186,7 @@ const OrderInputForm: React.FC = () => {
             shipping_method: finalShippingMethod,
             shipping_address: shippingAddress || null,
             delivery_notes: deliveryNotes || null,
+            delivery_date: deliveryDate || null,
             preparation_status: prepStatus,
             total_amount: totalAmount,
             discount_amount: discountAmount,
@@ -387,8 +392,24 @@ const OrderInputForm: React.FC = () => {
                   onChange={(e) => setDeliveryNotes(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={2}
-                  placeholder="Specific delivery date or special instructions..."
+                  placeholder="Special instructions..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Delivery Date
+                </label>
+                <input
+                  type="date"
+                  value={deliveryDate}
+                  onChange={(e) => setDeliveryDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Select delivery date (leave blank for ASAP)"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Leave blank for ASAP delivery
+                </p>
               </div>
             </div>
           </section>

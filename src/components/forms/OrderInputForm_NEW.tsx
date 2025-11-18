@@ -28,6 +28,7 @@ const OrderInputForm: React.FC = () => {
   const [customShipping, setCustomShipping] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
+  const [deliveryDate, setDeliveryDate] = useState('');
 
   // Order items
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
@@ -107,6 +108,7 @@ const OrderInputForm: React.FC = () => {
           shipping_method: finalShippingMethod,
           shipping_address: shippingAddress || null,
           delivery_notes: deliveryNotes || null,
+          delivery_date: deliveryDate || null,
           preparation_status: prepStatus,
           total_amount: totalAmount,
           created_by: user?.id,
@@ -168,6 +170,7 @@ const OrderInputForm: React.FC = () => {
       setCustomShipping('');
       setShippingAddress('');
       setDeliveryNotes('');
+      setDeliveryDate('');
       setOrderItems([]);
 
       setTimeout(() => setSuccess(false), 3000);
@@ -295,8 +298,24 @@ const OrderInputForm: React.FC = () => {
                   onChange={(e) => setDeliveryNotes(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   rows={2}
-                  placeholder="Specific delivery date or special instructions..."
+                  placeholder="Special instructions..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Delivery Date
+                </label>
+                <input
+                  type="date"
+                  value={deliveryDate}
+                  onChange={(e) => setDeliveryDate(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Select delivery date (leave blank for ASAP)"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Leave blank for ASAP delivery
+                </p>
               </div>
             </div>
           </section>
@@ -444,6 +463,7 @@ const OrderInputForm: React.FC = () => {
                   setCustomShipping('');
                   setShippingAddress('');
                   setDeliveryNotes('');
+                  setDeliveryDate('');
                   setOrderItems([]);
                 }
               }}

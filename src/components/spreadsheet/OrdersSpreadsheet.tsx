@@ -27,6 +27,7 @@ const OrdersSpreadsheet: React.FC = () => {
   const { orders, loading, error, refetch } = useOrders();
   const [searchTerm, setSearchTerm] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [sortByDeliveryDate, setSortByDeliveryDate] = useState(false);
 
   const filteredOrders = orders.filter(
     (order) => {
@@ -43,6 +44,19 @@ const OrdersSpreadsheet: React.FC = () => {
       );
     }
   );
+
+  // Sort orders by delivery date if enabled
+  const sortedOrders = sortByDeliveryDate
+    ? [...filteredOrders].sort((a, b) => {
+        // Orders with no delivery date (ASAP) come first
+        if (!a.delivery_date && !b.delivery_date) return 0;
+        if (!a.delivery_date) return -1;
+        if (!b.delivery_date) return 1;
+
+        // Sort by delivery date ascending (earliest first)
+        return new Date(a.delivery_date).getTime() - new Date(b.delivery_date).getTime();
+      })
+    : filteredOrders;
 
   const handleUpdatePrepStatus = async (orderId: string, newStatus: string, oldStatus: string) => {
     try {
@@ -212,8 +226,17 @@ const OrdersSpreadsheet: React.FC = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={sortByDeliveryDate}
+              onChange={(e) => setSortByDeliveryDate(e.target.checked)}
+              className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+            />
+            <span className="text-sm text-gray-700">Sort by Delivery Date</span>
+          </label>
           <div className="text-sm text-gray-600">
-            {filteredOrders.length} order(s)
+            {sortedOrders.length} order(s)
           </div>
         </div>
         <button
@@ -240,19 +263,19 @@ const OrdersSpreadsheet: React.FC = () => {
             <div className="excel-header-cell w-48">Delivery Notes</div>
             <div className="excel-header-cell w-32">Order Date</div>
             <div className="excel-header-cell w-40">Prep Status</div>
-            <div className="excel-header-cell w-32 text-right">Subtotal</div>
+            <div className="excel-header-cell w-32">Delivery Date</div>
             <div className="excel-header-cell w-32 text-right">Discount</div>
-            <div className="excel-header-cell w-32 text-right">Final Total</div>
+            <div className="excel-header-cell w-32 text-right">Total</div>
             <div className="excel-header-cell w-32 text-center">Actions</div>
           </div>
 
           {/* Data Rows */}
-          {filteredOrders.length === 0 ? (
+          {sortedOrders.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               No orders found. Create your first order using the Input Form.
             </div>
           ) : (
-            filteredOrders.map((order, index) => (
+            sortedOrders.map((order, index) => (
               <OrderRow
                 key={order.id}
                 order={order}
@@ -344,8 +367,8 @@ const OrderRow: React.FC<OrderRowProps> = ({
           <option value="Sent">Sent</option>
         </select>
       </div>
-      <div className="excel-cell w-32 text-right">
-        {formatCurrency(order.total_amount)}
+      <div className="excel-cell w-32">
+        {order.delivery_date ? formatDate(order.delivery_date) : <span className="text-gray-400 text-xs">ASAP</span>}
       </div>
       <div className="excel-cell w-32 text-right text-red-600">
         {order.discount_amount && order.discount_amount > 0
