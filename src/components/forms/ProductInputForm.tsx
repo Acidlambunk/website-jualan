@@ -516,70 +516,75 @@ const ProductInputForm: React.FC = () => {
               <div className="grid grid-cols-4 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Selected Color
+                    Color Name *
                   </label>
                   <input
                     type="text"
                     value={newColor.color_name}
-                    readOnly
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
-                    placeholder="Select a color above"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Initial Stock
-                  </label>
-                  <input
-                    type="number"
-                    value={newColor.stock_quantity}
                     onChange={(e) =>
                       setNewColor({
                         ...newColor,
-                        stock_quantity: parseInt(e.target.value) || 0,
+                        color_name: e.target.value,
                       })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    min="0"
+                    placeholder="e.g., Ruby Red, Sky Blue"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Capital Price
-                  </label>
-                  <input
-                    type="number"
-                    value={newColor.unit_price}
-                    onChange={(e) =>
-                      setNewColor({
-                        ...newColor,
-                        unit_price: parseFloat(e.target.value) || 0,
-                      })
-                    }
-                    placeholder="Cost price (leave 0 for base price)"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    min="0"
-                    step="1"
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Initial Stock
+                    </label>
+                    <input
+                      type="number"
+                      value={newColor.stock_quantity}
+                      onChange={(e) =>
+                        setNewColor({
+                          ...newColor,
+                          stock_quantity: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Capital Price
+                    </label>
+                    <input
+                      type="number"
+                      value={newColor.unit_price}
+                      onChange={(e) =>
+                        setNewColor({
+                          ...newColor,
+                          unit_price: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      placeholder="Cost price (leave 0 for base price)"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      min="0"
+                      step="1"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Reorder Level
+                    </label>
+                    <input
+                      type="number"
+                      value={newColor.reorder_level}
+                      onChange={(e) =>
+                        setNewColor({
+                          ...newColor,
+                          reorder_level: parseInt(e.target.value) || 5,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      min="0"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Reorder Level
-                  </label>
-                  <input
-                    type="number"
-                    value={newColor.reorder_level}
-                    onChange={(e) =>
-                      setNewColor({
-                        ...newColor,
-                        reorder_level: parseInt(e.target.value) || 5,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    min="0"
-                  />
-                </div>
-              </div>
 
               <button
                 type="button"
