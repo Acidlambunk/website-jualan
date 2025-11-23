@@ -90,16 +90,16 @@ const OrdersSpreadsheet: React.FC = () => {
               .from('product_colors')
               .select('stock_quantity, reserved_quantity')
               .eq('id', item.product_color_id)
-              .maybeSingle();
+              .single();
 
             if (colorError) {
               console.error('Error fetching product color:', colorError);
-              continue;
+              throw new Error(`Failed to fetch color data: ${colorError.message}`);
             }
 
             if (colorData) {
               // Decrease stock_quantity and reserved_quantity
-              await supabase
+              const { error: updateError } = await supabase
                 .from('product_colors')
                 .update({
                   stock_quantity: Math.max(0, colorData.stock_quantity - item.quantity),
@@ -107,8 +107,12 @@ const OrdersSpreadsheet: React.FC = () => {
                 })
                 .eq('id', item.product_color_id);
 
+              if (updateError) {
+                throw new Error(`Failed to update stock: ${updateError.message}`);
+              }
+
               // Log stock movement as OUT
-              await supabase.from('stock_movements').insert({
+              const { error: movementError } = await supabase.from('stock_movements').insert({
                 product_color_id: item.product_color_id,
                 movement_type: 'OUT',
                 quantity: item.quantity,
@@ -117,6 +121,10 @@ const OrdersSpreadsheet: React.FC = () => {
                 reason: `Order sent: ${orderId}`,
                 performed_by: user?.id,
               });
+
+              if (movementError) {
+                throw new Error(`Failed to create stock movement: ${movementError.message}`);
+              }
             }
           }
         }
@@ -153,24 +161,28 @@ const OrdersSpreadsheet: React.FC = () => {
           .from('product_colors')
           .select('reserved_quantity')
           .eq('id', productColorId)
-          .maybeSingle();
+          .single();
 
         if (colorError) {
           console.error('Error fetching product color:', colorError);
-          continue;
+          throw new Error(`Failed to fetch color data for deletion: ${colorError.message}`);
         }
 
         if (colorData) {
           // Decrease reserved quantity
-          await supabase
+          const { error: updateError } = await supabase
             .from('product_colors')
             .update({
               reserved_quantity: Math.max(0, colorData.reserved_quantity - quantity),
             })
             .eq('id', productColorId);
 
+          if (updateError) {
+            throw new Error(`Failed to release reserved stock: ${updateError.message}`);
+          }
+
           // Log stock movement
-          await supabase.from('stock_movements').insert({
+          const { error: movementError } = await supabase.from('stock_movements').insert({
             product_color_id: productColorId,
             movement_type: 'RELEASED',
             quantity: quantity,
@@ -179,6 +191,10 @@ const OrdersSpreadsheet: React.FC = () => {
             reason: `Order cancelled: ${order.customer_name}`,
             performed_by: user?.id,
           });
+
+          if (movementError) {
+            throw new Error(`Failed to create release movement: ${movementError.message}`);
+          }
         }
       }
 
@@ -351,9 +367,9 @@ const OrderRow: React.FC<OrderRowProps> = ({
 
   return (
     <div className="excel-row flex">
-      <div className="excel-cell w-12 text-center text-gray-500">{index}</div>
+      <div className="excel-cell-nowrap w-12 text-center text-gray-500">{index}</div>
       <div className="excel-cell w-40 font-medium">{order.customer_name}</div>
-      <div className="excel-cell w-32">{order.phone_number}</div>
+      <div className="excel-cell-nowrap w-32">{order.phone_number}</div>
       <div className="excel-cell w-64 text-sm">
         {order.order_items.length > 0 ? (
           <div className="space-y-0.5">
@@ -374,8 +390,8 @@ const OrderRow: React.FC<OrderRowProps> = ({
       <div className="excel-cell w-32">{order.shipping_method || '-'}</div>
       <div className="excel-cell w-48 text-sm">{order.shipping_address || '-'}</div>
       <div className="excel-cell w-48 text-sm text-gray-600">{order.delivery_notes || '-'}</div>
-      <div className="excel-cell w-32">{formatDate(order.order_date)}</div>
-      <div className="excel-cell w-40">
+      <div className="excel-cell-nowrap w-32">{formatDate(order.order_date)}</div>
+      <div className="excel-cell-nowrap w-40">
         <select
           value={order.preparation_status}
           onChange={(e) => onUpdatePrepStatus(order.id, e.target.value, order.preparation_status)}
@@ -389,18 +405,18 @@ const OrderRow: React.FC<OrderRowProps> = ({
           <option value="Sent">Sent</option>
         </select>
       </div>
-      <div className="excel-cell w-32">
+      <div className="excel-cell-nowrap w-32">
         {order.delivery_date ? formatDate(order.delivery_date) : <span className="text-gray-400 text-xs">ASAP</span>}
       </div>
-      <div className="excel-cell w-32 text-right text-red-600">
+      <div className="excel-cell-nowrap w-32 text-right text-red-600">
         {order.discount_amount && order.discount_amount > 0
           ? `-${formatCurrency(order.discount_amount)}`
           : '-'}
       </div>
-      <div className="excel-cell w-32 text-right font-semibold">
+      <div className="excel-cell-nowrap w-32 text-right font-semibold">
         {formatCurrency(order.final_amount || order.total_amount)}
       </div>
-      <div className="excel-cell w-32 text-center space-x-2">
+      <div className="excel-cell-nowrap w-32 text-center space-x-2">
         <button
           onClick={() => onEdit(order)}
           className="text-blue-600 hover:text-blue-800 text-sm font-medium"

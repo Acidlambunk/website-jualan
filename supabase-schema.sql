@@ -172,6 +172,9 @@ CREATE POLICY "Authenticated users can insert products" ON products
 CREATE POLICY "Authenticated users can update products" ON products
   FOR UPDATE USING (auth.role() = 'authenticated');
 
+CREATE POLICY "Authenticated users can delete products" ON products
+  FOR DELETE USING (auth.role() = 'authenticated');
+
 -- Product colors policies
 CREATE POLICY "Users can view all product colors" ON product_colors
   FOR SELECT USING (true);
@@ -181,6 +184,9 @@ CREATE POLICY "Authenticated users can insert product colors" ON product_colors
 
 CREATE POLICY "Authenticated users can update product colors" ON product_colors
   FOR UPDATE USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can delete product colors" ON product_colors
+  FOR DELETE USING (auth.role() = 'authenticated');
 
 -- Customer orders policies
 CREATE POLICY "Users can view all orders" ON customer_orders
@@ -192,6 +198,9 @@ CREATE POLICY "Authenticated users can insert orders" ON customer_orders
 CREATE POLICY "Authenticated users can update orders" ON customer_orders
   FOR UPDATE USING (auth.role() = 'authenticated');
 
+CREATE POLICY "Authenticated users can delete orders" ON customer_orders
+  FOR DELETE USING (auth.role() = 'authenticated');
+
 -- Order items policies
 CREATE POLICY "Users can view all order items" ON order_items
   FOR SELECT USING (true);
@@ -202,12 +211,18 @@ CREATE POLICY "Authenticated users can insert order items" ON order_items
 CREATE POLICY "Authenticated users can update order items" ON order_items
   FOR UPDATE USING (auth.role() = 'authenticated');
 
+CREATE POLICY "Authenticated users can delete order items" ON order_items
+  FOR DELETE USING (auth.role() = 'authenticated');
+
 -- Stock movements policies
 CREATE POLICY "Users can view all stock movements" ON stock_movements
   FOR SELECT USING (true);
 
 CREATE POLICY "Authenticated users can insert stock movements" ON stock_movements
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Authenticated users can delete stock movements" ON stock_movements
+  FOR DELETE USING (auth.role() = 'authenticated');
 
 -- Dropdown options policies
 CREATE POLICY "Users can view dropdown options" ON dropdown_options

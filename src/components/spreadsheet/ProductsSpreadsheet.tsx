@@ -243,7 +243,7 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, index, onEdit, onDelet
 
   return (
     <div className={`excel-row flex ${rowColor}`}>
-      <div className="excel-cell w-12 text-center text-gray-500">{index}</div>
+      <div className="excel-cell-nowrap w-12 text-center text-gray-500">{index}</div>
       <div className="excel-cell w-48 font-medium">{product.product_name}</div>
       <div className="excel-cell w-32 text-gray-600">
         {product.product_code || '-'}
@@ -265,10 +265,10 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, index, onEdit, onDelet
           )}
         </div>
       </div>
-      <div className="excel-cell w-24 text-right font-semibold">
+      <div className="excel-cell-nowrap w-24 text-right font-semibold">
         {totalStock}
       </div>
-      <div className="excel-cell w-24 text-right">
+      <div className="excel-cell-nowrap w-24 text-right">
         {product.base_price
           ? new Intl.NumberFormat('zh-TW', {
               style: 'currency',
@@ -276,10 +276,10 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, index, onEdit, onDelet
             }).format(product.base_price)
           : '-'}
       </div>
-      <div className="excel-cell w-32">
+      <div className="excel-cell-nowrap w-32">
         <StatusBadge status={stockStatus.status} type="stock" />
       </div>
-      <div className="excel-cell w-32 text-center">
+      <div className="excel-cell-nowrap w-32 text-center">
         <div className="flex items-center justify-center gap-2">
           <button
             onClick={() => onEdit(product)}

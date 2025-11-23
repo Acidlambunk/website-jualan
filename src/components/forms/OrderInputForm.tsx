@@ -222,22 +222,26 @@ const OrderInputForm: React.FC = () => {
               .from('product_colors')
               .select('reserved_quantity')
               .eq('id', item.product_color_id)
-              .maybeSingle();
+              .single();
 
             if (colorError) {
               console.error('Error fetching product color:', colorError);
-              continue;
+              throw new Error(`Failed to fetch color data: ${colorError.message}`);
             }
 
             if (colorData) {
-              await supabase
+              const { error: updateError } = await supabase
                 .from('product_colors')
                 .update({
                   reserved_quantity: colorData.reserved_quantity + item.quantity,
                 })
                 .eq('id', item.product_color_id);
 
-              await supabase.from('stock_movements').insert({
+              if (updateError) {
+                throw new Error(`Failed to update reserved quantity: ${updateError.message}`);
+              }
+
+              const { error: movementError } = await supabase.from('stock_movements').insert({
                 product_color_id: item.product_color_id,
                 movement_type: 'RESERVED',
                 quantity: -item.quantity,
@@ -246,6 +250,10 @@ const OrderInputForm: React.FC = () => {
                 reason: `Order ${orderData.id}`,
                 performed_by: user?.id,
               });
+
+              if (movementError) {
+                throw new Error(`Failed to create stock movement: ${movementError.message}`);
+              }
             }
           }
         }

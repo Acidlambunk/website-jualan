@@ -33,6 +33,7 @@ const ProductInputForm: React.FC = () => {
 
   // Color variants
   const [colorVariants, setColorVariants] = useState<ColorVariant[]>([]);
+  const [removedColorIds, setRemovedColorIds] = useState<string[]>([]);
   const [newColor, setNewColor] = useState<ColorVariant>({
     color_name: '',
     color_code: '#000000',
@@ -73,6 +74,14 @@ const ProductInputForm: React.FC = () => {
   };
 
   const handleRemoveColor = (index: number) => {
+    const colorToRemove = colorVariants[index];
+
+    // If this is an existing color (has ID), track it for deletion
+    if (colorToRemove.id) {
+      setRemovedColorIds([...removedColorIds, colorToRemove.id]);
+    }
+
+    // Remove from local state
     setColorVariants(colorVariants.filter((_, i) => i !== index));
   };
 
@@ -160,6 +169,7 @@ const ProductInputForm: React.FC = () => {
     setBasePrice('');
     setDescription('');
     setColorVariants([]);
+    setRemovedColorIds([]);
     clearEditing();
   };
 
@@ -209,7 +219,34 @@ const ProductInputForm: React.FC = () => {
       }
 
       // Handle color variants
-      if (colorVariants.length > 0 && productData) {
+      if (productData) {
+        // First, delete any removed colors
+        if (removedColorIds.length > 0) {
+          // Delete stock movements for removed colors
+          const { error: movementsError } = await supabase
+            .from('stock_movements')
+            .delete()
+            .in('product_color_id', removedColorIds);
+
+          if (movementsError) throw movementsError;
+
+          // Delete order items that reference removed colors
+          const { error: orderItemsError } = await supabase
+            .from('order_items')
+            .delete()
+            .in('product_color_id', removedColorIds);
+
+          if (orderItemsError) throw orderItemsError;
+
+          // Delete the colors themselves
+          const { error: colorsError } = await supabase
+            .from('product_colors')
+            .delete()
+            .in('id', removedColorIds);
+
+          if (colorsError) throw colorsError;
+        }
+
         // Separate new colors (without ID) from existing colors (with ID)
         const newColors = colorVariants.filter((color) => !color.id);
         const existingColors = colorVariants.filter((color) => color.id);
