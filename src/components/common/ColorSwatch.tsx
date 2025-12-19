@@ -22,7 +22,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({
   };
 
   const isLowStock = stock !== undefined && stock <= 5 && stock > 0;
-  const isOutOfStock = stock === 0;
+  const isOutOfStock = stock !== undefined && stock <= 0;
 
   return (
     <div className="relative inline-block group">
@@ -40,6 +40,11 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({
       {stock !== undefined && stock > 0 && (
         <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
           {stock > 99 ? '99+' : stock}
+        </div>
+      )}
+      {stock !== undefined && stock < 0 && (
+        <div className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
+          {stock}
         </div>
       )}
       {showTooltip && (name || stock !== undefined) && (

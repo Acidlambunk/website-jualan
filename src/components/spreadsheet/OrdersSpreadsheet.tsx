@@ -37,11 +37,21 @@ const OrdersSpreadsheet: React.FC = () => {
         return false;
       }
 
+      const searchLower = searchTerm.toLowerCase();
+
+      // Check if any product in the order matches the search term
+      const matchesProduct = order.order_items.some(
+        (item) =>
+          item.product_color.product.product_name.toLowerCase().includes(searchLower) ||
+          item.product_color.color_name.toLowerCase().includes(searchLower)
+      );
+
       // Apply search filter
       return (
-        order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer_name.toLowerCase().includes(searchLower) ||
         order.phone_number.includes(searchTerm) ||
-        (order.shipping_method?.toLowerCase().includes(searchTerm.toLowerCase()))
+        (order.shipping_method?.toLowerCase().includes(searchLower)) ||
+        matchesProduct
       );
     }
   );
@@ -102,8 +112,8 @@ const OrdersSpreadsheet: React.FC = () => {
               const { error: updateError } = await supabase
                 .from('product_colors')
                 .update({
-                  stock_quantity: Math.max(0, colorData.stock_quantity - item.quantity),
-                  reserved_quantity: Math.max(0, colorData.reserved_quantity - item.quantity),
+                  stock_quantity: colorData.stock_quantity - item.quantity,
+                  reserved_quantity: colorData.reserved_quantity - item.quantity,
                 })
                 .eq('id', item.product_color_id);
 
@@ -250,10 +260,10 @@ const OrdersSpreadsheet: React.FC = () => {
         <div className="flex items-center space-x-4">
           <input
             type="text"
-            placeholder="Search orders..."
+            placeholder="Search by customer, phone, or product..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-72"
           />
           <label className="flex items-center space-x-2 cursor-pointer">
             <input

@@ -54,13 +54,6 @@ const OrderInputForm: React.FC = () => {
       return;
     }
 
-    if (quantity > selectedColor.available_quantity) {
-      alert(
-        `Not enough stock. Available: ${selectedColor.available_quantity}`
-      );
-      return;
-    }
-
     const price = selectedProduct.base_price || 0;
 
     const newItem: OrderItem = {
@@ -149,6 +142,51 @@ const OrderInputForm: React.FC = () => {
 
       if (orderId) {
         // Update existing order
+        // First, get the old order items to release their reserved stock
+        const { data: oldOrderItems, error: oldItemsError } = await supabase
+          .from('order_items')
+          .select('product_color_id, quantity')
+          .eq('order_id', orderId);
+
+        if (oldItemsError) throw oldItemsError;
+
+        // Release reserved stock for old items
+        if (oldOrderItems && oldOrderItems.length > 0) {
+          for (const oldItem of oldOrderItems) {
+            const { data: colorData, error: colorError } = await supabase
+              .from('product_colors')
+              .select('reserved_quantity')
+              .eq('id', oldItem.product_color_id)
+              .single();
+
+            if (colorError) {
+              console.error('Error fetching product color:', colorError);
+              continue;
+            }
+
+            if (colorData) {
+              // Release the old reserved quantity
+              const { error: updateError } = await supabase
+                .from('product_colors')
+                .update({
+                  reserved_quantity: Math.max(0, colorData.reserved_quantity - oldItem.quantity),
+                })
+                .eq('id', oldItem.product_color_id);
+
+              if (updateError) {
+                console.error('Error releasing reserved stock:', updateError);
+              }
+            }
+          }
+
+          // Delete old stock movements for this order
+          await supabase
+            .from('stock_movements')
+            .delete()
+            .eq('reference_type', 'order')
+            .eq('reference_id', orderId);
+        }
+
         const { data, error: orderError } = await supabase
           .from('customer_orders')
           .update({
@@ -215,45 +253,43 @@ const OrderInputForm: React.FC = () => {
 
         if (itemsError) throw itemsError;
 
-        // Reserve stock and log movements (only for new orders)
-        if (!orderId) {
-          for (const item of orderItems) {
-            const { data: colorData, error: colorError } = await supabase
-              .from('product_colors')
-              .select('reserved_quantity')
-              .eq('id', item.product_color_id)
-              .single();
+        // Reserve stock and log movements (for both new and updated orders)
+        for (const item of orderItems) {
+          const { data: colorData, error: colorError } = await supabase
+            .from('product_colors')
+            .select('reserved_quantity')
+            .eq('id', item.product_color_id)
+            .single();
 
-            if (colorError) {
-              console.error('Error fetching product color:', colorError);
-              throw new Error(`Failed to fetch color data: ${colorError.message}`);
+          if (colorError) {
+            console.error('Error fetching product color:', colorError);
+            throw new Error(`Failed to fetch color data: ${colorError.message}`);
+          }
+
+          if (colorData) {
+            const { error: updateError } = await supabase
+              .from('product_colors')
+              .update({
+                reserved_quantity: colorData.reserved_quantity + item.quantity,
+              })
+              .eq('id', item.product_color_id);
+
+            if (updateError) {
+              throw new Error(`Failed to update reserved quantity: ${updateError.message}`);
             }
 
-            if (colorData) {
-              const { error: updateError } = await supabase
-                .from('product_colors')
-                .update({
-                  reserved_quantity: colorData.reserved_quantity + item.quantity,
-                })
-                .eq('id', item.product_color_id);
+            const { error: movementError } = await supabase.from('stock_movements').insert({
+              product_color_id: item.product_color_id,
+              movement_type: 'RESERVED',
+              quantity: -item.quantity,
+              reference_type: 'order',
+              reference_id: orderData.id,
+              reason: orderId ? `Order updated: ${orderData.id}` : `Order ${orderData.id}`,
+              performed_by: user?.id,
+            });
 
-              if (updateError) {
-                throw new Error(`Failed to update reserved quantity: ${updateError.message}`);
-              }
-
-              const { error: movementError } = await supabase.from('stock_movements').insert({
-                product_color_id: item.product_color_id,
-                movement_type: 'RESERVED',
-                quantity: -item.quantity,
-                reference_type: 'order',
-                reference_id: orderData.id,
-                reason: `Order ${orderData.id}`,
-                performed_by: user?.id,
-              });
-
-              if (movementError) {
-                throw new Error(`Failed to create stock movement: ${movementError.message}`);
-              }
+            if (movementError) {
+              throw new Error(`Failed to create stock movement: ${movementError.message}`);
             }
           }
         }
@@ -551,7 +587,6 @@ const OrderInputForm: React.FC = () => {
                     onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     min="1"
-                    max={selectedColor?.available_quantity || 1}
                     disabled={!selectedColor}
                   />
                 </div>

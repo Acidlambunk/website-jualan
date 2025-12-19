@@ -97,7 +97,7 @@ export interface DropdownOption {
   created_at: string;
 }
 
-export type StockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK';
+export type StockStatus = 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'NEGATIVE_STOCK';
 
 export interface ProductWithColors extends Product {
   colors: ProductColor[];

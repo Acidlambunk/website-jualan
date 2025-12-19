@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS product_colors (
   product_id UUID REFERENCES products(id) ON DELETE CASCADE,
   color_name TEXT NOT NULL,
   color_code TEXT,
-  stock_quantity INTEGER DEFAULT 0 CHECK (stock_quantity >= 0),
+  stock_quantity INTEGER DEFAULT 0,
   reserved_quantity INTEGER DEFAULT 0 CHECK (reserved_quantity >= 0),
   available_quantity INTEGER GENERATED ALWAYS AS (stock_quantity - reserved_quantity) STORED,
   reorder_level INTEGER DEFAULT 5,

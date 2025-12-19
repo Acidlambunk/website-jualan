@@ -265,7 +265,7 @@ const ProductRow: React.FC<ProductRowProps> = ({ product, index, onEdit, onDelet
           )}
         </div>
       </div>
-      <div className="excel-cell-nowrap w-24 text-right font-semibold">
+      <div className={`excel-cell-nowrap w-24 text-right font-semibold ${totalStock < 0 ? 'text-purple-600' : ''}`}>
         {totalStock}
       </div>
       <div className="excel-cell-nowrap w-24 text-right">

@@ -11,6 +11,7 @@ interface ColorVariant {
   color_name: string;
   color_code: string;
   stock_quantity: number;
+  reserved_quantity: number;
   unit_price: number;
   reorder_level: number;
   notes: string;
@@ -38,6 +39,7 @@ const ProductInputForm: React.FC = () => {
     color_name: '',
     color_code: '#000000',
     stock_quantity: 0,
+    reserved_quantity: 0,
     unit_price: 0,
     reorder_level: 5,
     notes: '',
@@ -66,6 +68,7 @@ const ProductInputForm: React.FC = () => {
       color_name: '',
       color_code: '#000000',
       stock_quantity: 0,
+      reserved_quantity: 0,
       unit_price: 0,
       reorder_level: 5,
       notes: '',
@@ -90,10 +93,6 @@ const ProductInputForm: React.FC = () => {
     if (!color.id) return;
 
     const newStock = color.stock_quantity + amount;
-    if (newStock < 0) {
-      alert('Stock cannot be negative');
-      return;
-    }
 
     try {
       // Update stock in database
@@ -153,6 +152,7 @@ const ProductInputForm: React.FC = () => {
           color_name: color.color_name,
           color_code: color.color_code || '#000000',
           stock_quantity: color.stock_quantity,
+          reserved_quantity: color.reserved_quantity || 0,
           unit_price: color.unit_price || 0,
           reorder_level: color.reorder_level,
           notes: color.notes || '',
@@ -456,7 +456,11 @@ const ProductInputForm: React.FC = () => {
                     <div className="flex-1">
                       <div className="font-medium">{color.color_name}</div>
                       <div className="text-sm text-gray-600">
-                        Stock: {color.stock_quantity} | Price:{' '}
+                        Available: {color.stock_quantity - color.reserved_quantity}
+                        {color.reserved_quantity > 0 && (
+                          <span className="text-orange-600"> (Reserved: {color.reserved_quantity})</span>
+                        )}
+                        {' '}| Total Stock: {color.stock_quantity} | Price:{' '}
                         {color.unit_price > 0
                           ? new Intl.NumberFormat('zh-TW', {
                               style: 'currency',

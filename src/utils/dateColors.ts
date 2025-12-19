@@ -40,7 +40,7 @@ export const getStatusColor = (status: string): string => {
 /**
  * Returns badge color for stock status
  */
-export const getStockStatusColor = (status: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK'): string => {
+export const getStockStatusColor = (status: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_STOCK' | 'NEGATIVE_STOCK'): string => {
   switch (status) {
     case 'IN_STOCK':
       return 'bg-green-100 text-green-800';
@@ -48,6 +48,8 @@ export const getStockStatusColor = (status: 'IN_STOCK' | 'LOW_STOCK' | 'OUT_OF_S
       return 'bg-orange-100 text-orange-800';
     case 'OUT_OF_STOCK':
       return 'bg-red-100 text-red-800';
+    case 'NEGATIVE_STOCK':
+      return 'bg-purple-100 text-purple-800';
     default:
       return 'bg-gray-100 text-gray-800';
   }

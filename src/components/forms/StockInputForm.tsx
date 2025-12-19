@@ -23,10 +23,6 @@ const StockInputForm: React.FC = () => {
     colorName: string
   ) => {
     const newStock = currentStock + amount;
-    if (newStock < 0) {
-      alert('Stock cannot be negative');
-      return;
-    }
 
     try {
       // Update stock

@@ -12,9 +12,13 @@ export const getStockStatus = (colorVariants: ProductColor[]): {
     0
   );
   const lowStockColors = colorVariants.filter(
-    color => color.available_quantity <= color.reorder_level
+    color => color.available_quantity <= color.reorder_level && color.available_quantity > 0
   );
 
+  // Check for negative stock first (backorders/overlapping orders)
+  if (totalStock < 0) {
+    return { status: 'NEGATIVE_STOCK', color: 'purple' };
+  }
   if (totalStock === 0) {
     return { status: 'OUT_OF_STOCK', color: 'red' };
   }
@@ -68,10 +72,19 @@ export const getLowStockColors = (
 };
 
 /**
- * Get out of stock color variants
+ * Get out of stock color variants (including negative stock)
  */
 export const getOutOfStockColors = (
   colorVariants: ProductColor[]
 ): ProductColor[] => {
-  return colorVariants.filter(color => color.available_quantity === 0);
+  return colorVariants.filter(color => color.available_quantity <= 0);
+};
+
+/**
+ * Get negative stock color variants (backorders)
+ */
+export const getNegativeStockColors = (
+  colorVariants: ProductColor[]
+): ProductColor[] => {
+  return colorVariants.filter(color => color.available_quantity < 0);
 };
