@@ -424,7 +424,7 @@ const OrderRow: React.FC<OrderRowProps> = ({
           : '-'}
       </div>
       <div className="excel-cell-nowrap w-32 text-right font-semibold">
-        {formatCurrency(order.final_amount || order.total_amount)}
+        {formatCurrency(order.final_amount ?? order.total_amount)}
       </div>
       <div className="excel-cell-nowrap w-32 text-center space-x-2">
         <button

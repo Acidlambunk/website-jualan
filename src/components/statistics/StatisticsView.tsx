@@ -29,7 +29,7 @@ const StatisticsView: React.FC = () => {
     const productColorSales: Map<string, ProductSalesData> = new Map();
 
     completedSales.forEach((order) => {
-      const revenue = order.final_amount || order.total_amount || 0;
+      const revenue = order.final_amount ?? order.total_amount ?? 0;
       const shippingCost = order.shipping_cost || 0;
 
       totalRevenue += revenue;
